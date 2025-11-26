@@ -1,0 +1,154 @@
+{
+	"info": {
+		"name": "Webhook API",
+		"description": "Collection for testing webhook server and receiver",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Webhook Server",
+			"item": [
+				{
+					"name": "Subscribe to Webhook",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"url\": \"http://localhost:8081/webhook\",\n  \"events\": [\"user.created\", \"user.updated\"]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/subscribe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"subscribe"
+							]
+						},
+						"description": "Register a webhook URL to receive events"
+					},
+					"response": []
+				},
+				{
+					"name": "Trigger Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/trigger",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"trigger"
+							]
+						},
+						"description": "Trigger a simple test event that will send webhooks to all subscribers"
+					},
+					"response": []
+				},
+				{
+					"name": "Trigger Custom Event with JSON Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"order.created\",\n  \"data\": {\n    \"order_id\": \"ORD-12345\",\n    \"customer\": {\n      \"name\": \"John Doe\",\n      \"email\": \"john@example.com\"\n    },\n    \"items\": [\n      {\n        \"product_id\": \"PROD-001\",\n        \"name\": \"Laptop\",\n        \"quantity\": 1,\n        \"price\": 1299.99\n      },\n      {\n        \"product_id\": \"PROD-002\",\n        \"name\": \"Mouse\",\n        \"quantity\": 2,\n        \"price\": 29.99\n      }\n    ],\n    \"total\": 1359.97,\n    \"status\": \"pending\"\n  }\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/trigger-custom",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"trigger-custom"
+							]
+						},
+						"description": "Trigger an event with custom JSON data structure"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for the webhook server (port 8080)"
+		},
+		{
+			"name": "Webhook Receiver",
+			"item": [
+				{
+					"name": "Receive Webhook (Manual Test)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Webhook-Signature",
+								"value": "YOUR_SIGNATURE_HERE",
+								"description": "HMAC signature for verification"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"evt_1234567890\",\n  \"type\": \"user.created\",\n  \"data\": \"New user registered: test@example.com\",\n  \"timestamp\": \"2024-01-01T12:00:00Z\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/webhook",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"webhook"
+							]
+						},
+						"description": "Manual test endpoint for webhook receiver (normally called by the server)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoint for the webhook receiver (port 8081) - Usually called automatically by the server"
+		}
+	],
+	"variable": [
+		{
+			"key": "server_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "receiver_url",
+			"value": "http://localhost:8081",
+			"type": "string"
+		}
+	]
+}
